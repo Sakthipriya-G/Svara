@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVARA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="manifest" href="manifest.json">
+  class="google-main-logo"><link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff0000">
+ <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #312e2e;
+    }
+    .title-bar {
+      position: relative;
+      width: 100%;
+      background: rgb(134, 2, 2);
+      box-shadow: 0 2px 5px rgb(250, 249, 249);
+      padding: 16px 0 20px 0;
+    }
+    .title-bar h1 {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      color:rgb(255, 255, 255);
+    }
+    .settings-icon {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 26px;
+      color: black;
+      text-decoration: none;
+    }
+    /* Mood Buttons */
+    #mood-buttons {
+      margin-top: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+    }
+    .mood-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 80px;
+    }
+    #mood-buttons button {
+      width: 65px;
+      height: 65px;
+      font-size: 30px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #mood-buttons button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+    .mood-label {
+      margin-top: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: rgb(255, 255, 255);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+    /* Upload Form Styles */
+    #upload-section {
+      margin-top: 40px;
+      padding: 20px;
+      border-top: 2px solid #ccc;
+    }
+    #upload-section input, #upload-section select {
+      margin: 8px 0;
+      padding: 6px;
+      width: 200px;
+    }
+    #upload-section button {
+      margin-top: 12px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Title bar -->
+<div class="title-bar">
+  <h1>SVARA</h1>
+  <a href="settings.html" class="settings-icon" title="Settings"><i class="fas fa-cog"></i></a>
+</div>
+
+<!-- Mood Buttons -->
+<div id="mood-buttons">
+  <div class="mood-container">
+    <button style="background:rgb(245, 229, 5);" onclick="selectMood('Happy')">😊</button>
+    <span class="mood-label">Happy</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:dodgerblue; color:white" onclick="selectMood('Sad')">😢</button>
+    <span class="mood-label">Sad</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:#f00404; color:white" onclick="selectMood('Love')">❤️</button>
+    <span class="mood-label">Love</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:coral; color:white" onclick="selectMood('Energetic')">⚡</button>
+    <span class="mood-label">Energetic</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:#9CBFAA; color:white" onclick="selectMood('Calm')">🌿</button>
+    <span class="mood-label">Peace</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:limegreen; color:white" onclick="selectMood('Old')">📻</button>
+    <span class="mood-label">Retro</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:olive; color:white" onclick="selectMood('Confident')">😎</button>
+    <span class="mood-label">Motivation</span>
+  </div>
+  <div class="mood-container">
+    <button style="background:#3988A3; color:white" onclick="selectMood('Sleepy')">💤</button>
+    <span class="mood-label">Sleepy</span>
+  </div>
+</div>
+
+<!-- Upload Section -->
+<div id="upload-section">
+  <h2>Upload Your Song</h2>
+  <form id="uploadForm">
+    <input type="text" id="title" placeholder="Song Title" required><br>
+    <select id="mood" required>
+      <option value="Happy">Happy</option>
+      <option value="Sad">Sad</option>
+      <option value="Love">Love</option>
+      <option value="Energetic">Energetic</option>
+      <option value="Calm">Peace</option>
+      <option value="Old">Retro</option>
+      <option value="Confident">Motivation</option>
+      <option value="Sleepy">Sleepy</option>
+    </select><br>
+    <input type="file" id="file" accept="audio/*" required><br>
+    <label>
+      <input type="checkbox" id="disclaimer" required>
+      I confirm I own or have permission to upload this song.
+    </label><br>
+    <button type="submit">Upload Song</button>
+  </form>
+</div>
+
+<script>
+let songs = JSON.parse(localStorage.getItem('songs')) || [];
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js')
+  .then(() => console.log('Service Worker Registered'));
+}
+
+// Upload
+document.getElementById('uploadForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const title = document.getElementById('title').value;
+  const mood = document.getElementById('mood').value;
+  const fileInput = document.getElementById('file');
+  const disclaimer = document.getElementById('disclaimer').checked;
+
+  if(!disclaimer){ alert("Confirm ownership!"); return;}
+  if(fileInput.files.length===0){ alert("Select a file!"); return;}
+
+  const file = fileInput.files[0];
+  const url = URL.createObjectURL(file);
+
+  songs.push({title,mood,url});
+  localStorage.setItem('songs', JSON.stringify(songs));
+  alert(`Song "${title}" uploaded!`);
+  document.getElementById('uploadForm').reset();
+});
+
+// Mood selection -> go to music page
+function selectMood(mood){
+  localStorage.setItem('selectedMood', mood);
+  window.location.href = 'music.html';
+}
+</script>
+
+</body>
+</html>

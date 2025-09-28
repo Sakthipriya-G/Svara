@@ -1,0 +1,95 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVARA - Music</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+<!-- Added manifest for app icon -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff0000">
+</head>
+<body>
+
+<div class="title-bar">
+  <h1>SVARA - Music</h1>
+</div>
+
+<div id="audio-container">
+  <div id="now-playing">Loading songs...</div>
+  <audio id="audio-player" controls></audio>
+  <div id="controls">
+    <a href="home.html" class="back-icon"><i class="fas fa-arrow-left"></i> Back</a>
+    <button onclick="prevSong()">⏮️ Previous</button>
+    <button onclick="nextSong()">⏭️ Next</button>
+    <button onclick="deleteSong()">🗑️ Delete Song</button>
+    <button onclick="player.play()">▶️ Play</button> <!-- Mobile play button -->
+  </div>
+</div>
+
+<script>
+// Load songs and selected mood
+let allSongs = JSON.parse(localStorage.getItem('songs')) || [];
+let selectedMood = localStorage.getItem('selectedMood') || null;
+let moodSongs = allSongs.filter(s => s.mood === selectedMood);
+let currentIndex = 0;
+const player = document.getElementById('audio-player');
+const nowPlaying = document.getElementById('now-playing');
+
+// Mood background gradients
+const moodColors = {
+  "Happy":"linear-gradient(135deg,#fceabb,#f8b500)",
+  "Sad":"linear-gradient(135deg,#1e3c72,#2a5298)",
+  "Love":"linear-gradient(135deg,#ff5f6d,#ffc371)",
+  "Energetic":"linear-gradient(135deg,#f12711,#f5af19)",
+  "Calm":"linear-gradient(135deg,#a8edea,#fed6e3)",
+  "Old":"linear-gradient(135deg,#c0c0aa,#1cefff)",
+  "Confident":"linear-gradient(135deg,#56ab2f,#a8e063)",
+  "Sleepy":"linear-gradient(135deg,#2c3e50,#4ca1af)"
+};
+
+document.body.style.background = moodColors[selectedMood] || "#333";
+
+function playCurrent(){
+  if(moodSongs.length === 0){
+    nowPlaying.textContent = "No songs for this mood.";
+    player.src = "";
+    return;
+  }
+  const song = moodSongs[currentIndex];
+  player.src = song.url;
+  nowPlaying.textContent = `Now Playing: ${song.title} (${song.language})`;
+}
+
+player.addEventListener('ended', function(){
+  currentIndex++;
+  if(currentIndex < moodSongs.length){
+    playCurrent();
+  } else {
+    nowPlaying.textContent = "End of playlist.";
+  }
+});
+
+function nextSong(){ if(currentIndex < moodSongs.length-1){ currentIndex++; playCurrent(); } }
+function prevSong(){ if(currentIndex > 0){ currentIndex--; playCurrent(); } }
+
+function deleteSong(){
+  if(moodSongs.length === 0) return;
+  const song = moodSongs[currentIndex];
+  if(confirm(`Delete "${song.title}" from playlist?`)){
+    moodSongs.splice(currentIndex,1);
+    const indexInAll = allSongs.findIndex(s => s.url === song.url);
+    if(indexInAll > -1) allSongs.splice(indexInAll,1);
+    localStorage.setItem('songs', JSON.stringify(allSongs));
+    if(currentIndex >= moodSongs.length) currentIndex = moodSongs.length - 1;
+    playCurrent();
+  }
+}
+
+playCurrent();
+</script>
+
+</body>
+</html>
